@@ -1,7 +1,7 @@
 {
   "name": "m2-full-rest-api-project",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./server.js",
