@@ -1,7 +1,7 @@
 import { app } from "./app.js";
 import mongoose from "mongoose";
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 const DB_HOST =
   "mongodb+srv://admin:SpacejamTron86@cluster0.2pscb.mongodb.net/test_db?retryWrites=true&w=majority&appName=Cluster0";
 
