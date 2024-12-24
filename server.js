@@ -1,9 +1,15 @@
 import { app } from "./app.js";
 import mongoose from "mongoose";
 
+// require("dotenv").config();
+import "dotenv/config";
+
 const port = process.env.PORT || 3000;
-const DB_HOST =
-  "mongodb+srv://admin:SpacejamTron86@cluster0.2pscb.mongodb.net/test_db?retryWrites=true&w=majority&appName=Cluster0";
+const DB_HOST = process.env.DB_HOST;
+
+// console.log("process.env.DB_HOST:::", process.env.DB_HOST);
+// console.log("process.env.PORT:::", process.env.PORT);
+// console.log("process.env:::>", process.env);
 
 mongoose
   .connect(DB_HOST)
