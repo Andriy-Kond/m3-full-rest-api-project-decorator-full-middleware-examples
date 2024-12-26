@@ -3,6 +3,10 @@ import logger from "morgan"; // outputs to console request info
 import cors from "cors";
 import { contactsRouter } from "./routes/api/contactsRouter.js";
 
+//% Time to time access to process.env not in all project. Maybe moving these rows from server.js to app.js may help (but it is not certain):
+// // require("dotenv").config();
+// import "dotenv/config"; // Method .config() looks for file .env, reads it and add to process.env keys with values.
+
 export const app = express();
 
 // In package.json, depends of value (development or production) in variable ENV (aka NODE_ENV) will be showed full or short info
