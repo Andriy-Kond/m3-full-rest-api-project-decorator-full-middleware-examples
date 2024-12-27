@@ -1,7 +1,9 @@
+// * Move functions to contactsController.js
+
 import express from "express";
 import { contactsController } from "../../controllers/contactsController.js";
 import { checkSchemaDecorator } from "../../middlewares/checkShemaDecorator.js";
-import { contactsShema } from "../../schemas/contactsShema.js";
+import { contactsShema } from "../../models/contact.js";
 
 export const contactsRouter = express.Router();
 
