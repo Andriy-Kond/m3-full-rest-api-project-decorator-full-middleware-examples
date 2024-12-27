@@ -4,13 +4,29 @@ import { HttpError } from "../utils/HttpError.js";
 import { tryCatchDecorator } from "../utils/tryCatchDecorator.js";
 
 const getContacts = async (req, res, next) => {
-  const contacts = await Contact.find();
+  //^ Method .find() always returns array.
+  const contacts = await Contact.find(); // Finds all items in collection
+  const contacts2 = await Contact.find({ name: "Andrii8" }); // Will search for an exact match: will find "Andrii8", but not "Andrii" (will return empty array).
+  const contacts3 = await Contact.find({}, "name email"); // Returns fields "_id", "name" and "email" only.
+  const contacts4 = await Contact.find({}, "-name -email"); // Returns all fields except "name" and "email"
 
   res.json(contacts);
 };
 
 const getContactById = async (req, res, next) => {
-  const contact = await Contact.getContactById(req.params.id);
+  // const contact = await Contact.getContactById(req.params.id);
+
+  //^ Method .findOne() returns first match or null
+  const contact = await Contact.findOne({ _id: req.params.id }); // return first match where _id === req.params.id. Used for search by any field except id.
+
+  const contact2 = await Contact.findById(req.params.id); // Used for search by field _id
+
+  // When _id have right format, but that _id not in db, the .findById() returns "null", and you'll get status 404, because check "if (!contact)..." will return "false".
+  // When _id format will be wrong you'll get this error (because "contact" will be "true":
+  //$ Cast to ObjectId failed for value \"676ed63e31157cbbd0a69a105\" (type string) at path \"_id\" for model \"contact\"
+  // and, accordingly, status 500 instead 404.
+  // Therefore you should use additional middleware isValidId
+
   if (!contact) {
     //$ op1
     // return res.status(404).json({ message: "Not found" });
@@ -26,6 +42,7 @@ const getContactById = async (req, res, next) => {
 };
 
 const addContact = async (req, res, next) => {
+  //^ Method .create()
   const newContact = await Contact.create(req.body);
   res.status(201).json(newContact);
 };
@@ -33,13 +50,13 @@ const addContact = async (req, res, next) => {
 const editContact = async (req, res, next) => {
   const { id } = req.params;
 
-  // # remove shema validation to routes
+  // # Move shema validation to routes
   // const { error } = contactsShema.validate(req.body);
   // if (error) throw HttpError({ status: 400, message: error });
 
-  const editedContact = await Contact.editContact({
-    id,
-    ...req.body,
+  //^ Method .findByIdAndUpdate(id, obj, {new: true}): first argument must be id, second - updated object, third - for return updated obj (by default it returns old obj)
+  const editedContact = await Contact.findByIdAndUpdate(id, req.body, {
+    new: true,
   });
 
   if (!editedContact) throw HttpError({ status: 404, message: "Not found" });

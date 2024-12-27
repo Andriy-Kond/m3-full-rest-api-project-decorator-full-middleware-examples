@@ -1,10 +1,10 @@
 import { Schema, model } from "mongoose";
 import validate from "mongoose-validator";
 import Joi from "joi";
-import { handleMongooseError } from "../utils/handleMongooseError";
+import { handleMongooseError } from "../utils/handleMongooseError.js";
 
 const numberTypeList = ["home", "work", "friend"];
-const birthDateRegExp = /^\d{2}-\d{2}-{4}$/;
+const birthDateRegExp = /^\d{2}-\d{2}-\d{4}$/;
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})*$/;
 
 //% Mongoose-schema - validate data before for save it in db
@@ -120,7 +120,7 @@ export const contactsShema = Joi.object({
   phone: Joi.alternatives().try(Joi.string(), Joi.number()).required(),
   favorite: Joi.boolean(),
   number_type: Joi.string()
-    .validate(...numberTypeList)
+    .valid(...numberTypeList)
     .required(),
   birth_date: Joi.string().pattern(birthDateRegExp).required(),
 });
