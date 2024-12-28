@@ -2,7 +2,7 @@
 
 import express from "express";
 import { contactsController } from "../../controllers/contactsController.js";
-import { checkSchemaDecorator } from "../../middlewares/checkShemaDecorator.js";
+import { checkErrorJoiSchemaDecorator } from "../../middlewares/checkErrorJoiSchemaDecorator.js";
 import { joiSchemas } from "../../models/contactModel.js";
 import { isValidId } from "../../middlewares/isValidId.js";
 
@@ -12,10 +12,10 @@ contactsRouter.get("/", contactsController.getContacts);
 
 contactsRouter.get("/:id", isValidId, contactsController.getContactById);
 
-// * local middlewares "checkSchemaDecorator" for each request:
+// * local middlewares "checkErrorJoiSchemaDecorator" for each request:
 contactsRouter.post(
   "/",
-  checkSchemaDecorator(joiSchemas.addContact),
+  checkErrorJoiSchemaDecorator(joiSchemas.addContact),
   contactsController.addContact,
 );
 
@@ -23,7 +23,7 @@ contactsRouter.post(
 contactsRouter.put(
   "/:id",
   isValidId,
-  checkSchemaDecorator(joiSchemas.addContact),
+  checkErrorJoiSchemaDecorator(joiSchemas.addContact),
   contactsController.editFullContact,
 );
 
@@ -31,8 +31,8 @@ contactsRouter.put(
 contactsRouter.patch(
   "/:id/favorite",
   isValidId,
-  checkSchemaDecorator(joiSchemas.editFavorite),
+  checkErrorJoiSchemaDecorator(joiSchemas.editFavorite),
   contactsController.editFavorite,
 );
 
-contactsRouter.delete("/:id", contactsController.removeContact);
+contactsRouter.delete("/:id", isValidId, contactsController.removeContact);

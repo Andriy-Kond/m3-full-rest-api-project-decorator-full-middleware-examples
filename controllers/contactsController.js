@@ -1,4 +1,3 @@
-// import { Contact } from "../models/Contact.js";
 import { Contact } from "../models/contactModel.js";
 import { HttpError } from "../utils/HttpError.js";
 import { tryCatchDecorator } from "../utils/tryCatchDecorator.js";
@@ -14,11 +13,8 @@ const getContacts = async (req, res, next) => {
 };
 
 const getContactById = async (req, res, next) => {
-  // const contact = await Contact.getContactById(req.params.id);
-
   //^ Method .findOne() returns first match or null
   const contact = await Contact.findOne({ _id: req.params.id }); // return first match where _id === req.params.id. Used for search by any field except id.
-
   const contact2 = await Contact.findById(req.params.id); // Used for search by field _id
 
   // When _id have right format, but that _id not in db, the .findById() returns "null", and you'll get status 404, because check "if (!contact)..." will return "false".
@@ -28,13 +24,6 @@ const getContactById = async (req, res, next) => {
   // Therefore you should use additional middleware isValidId
 
   if (!contact) {
-    //$ op1
-    // return res.status(404).json({ message: "Not found" });
-    //$ opt2
-    // const error = new Error("Not found");
-    // error.status = 404;
-    // throw error;
-    //$ opt3
     throw HttpError({ status: 404, message: "Not found" });
   }
 
@@ -64,10 +53,11 @@ const editFullContact = async (req, res, next) => {
   res.json(editedContact);
 };
 
+// Method .findByIdAndUpdate() validating only those fields that it receives. Other fields it not touching.
+// So functions editFullContact and editFavorite will be totally the same.
 const editFavorite = async (req, res, next) => {
   const { id } = req.params;
 
-  // Method .findByIdAndUpdate() validating only those fields that it receives. Other fields it not touching.
   const editedContact = await Contact.findByIdAndUpdate(id, req.body, {
     new: true,
   });
@@ -84,12 +74,12 @@ const removeContact = async (req, res, next) => {
   if (!removedContact) throw HttpError({ status: 404, message: "Not found" });
 
   // res.json(removedContact);
-
+  // or:
   res.json({ message: "Delete success" });
 
   // if need to send 204 status:
   // res.status(204).json({ message: "Delete success" }); - doesn't make sense because 204 status means "No Content". So body will not come anyway.
-  // res.status(204).send(); // it is enough for 204 status
+  // res.status(204).send(); // Will be enough for 204 status
 };
 
 export const contactsController = {

@@ -1,6 +1,6 @@
 import { HttpError } from "../utils/HttpError.js";
 
-export const checkSchemaDecorator = schema => {
+export const checkErrorJoiSchemaDecorator = schema => {
   return (req, res, next) => {
     const { error } = schema.validate(req.body);
 
