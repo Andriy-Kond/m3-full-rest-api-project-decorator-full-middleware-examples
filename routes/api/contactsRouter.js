@@ -3,7 +3,7 @@
 import express from "express";
 import { contactsController } from "../../controllers/contactsController.js";
 import { checkSchemaDecorator } from "../../middlewares/checkShemaDecorator.js";
-import { contactsShema } from "../../models/contact.js";
+import { joiSchemas } from "../../models/contactModel.js";
 import { isValidId } from "../../middlewares/isValidId.js";
 
 export const contactsRouter = express.Router();
@@ -15,24 +15,24 @@ contactsRouter.get("/:id", isValidId, contactsController.getContactById);
 // * local middlewares "checkSchemaDecorator" for each request:
 contactsRouter.post(
   "/",
-  checkSchemaDecorator(contactsShema),
+  checkSchemaDecorator(joiSchemas.addContact),
   contactsController.addContact,
 );
 
-// for update all fields
+// Route for update all fields
 contactsRouter.put(
   "/:id",
   isValidId,
-  checkSchemaDecorator(contactsShema),
-  contactsController.editContact,
+  checkSchemaDecorator(joiSchemas.addContact),
+  contactsController.editFullContact,
 );
 
-// for update only one field (for example "favorite")
+// Route for update only one field (for example "favorite")
 contactsRouter.patch(
   "/:id/favorite",
   isValidId,
-  checkSchemaDecorator(contactsShema),
-  contactsController.editContact,
+  checkSchemaDecorator(joiSchemas.editFavorite),
+  contactsController.editFavorite,
 );
 
 contactsRouter.delete("/:id", contactsController.removeContact);

@@ -1,5 +1,5 @@
 // import { Contact } from "../models/Contact.js";
-import { Contact, contactsShema } from "../models/contact.js";
+import { Contact } from "../models/contactModel.js";
 import { HttpError } from "../utils/HttpError.js";
 import { tryCatchDecorator } from "../utils/tryCatchDecorator.js";
 
@@ -47,11 +47,11 @@ const addContact = async (req, res, next) => {
   res.status(201).json(newContact);
 };
 
-const editContact = async (req, res, next) => {
+const editFullContact = async (req, res, next) => {
   const { id } = req.params;
 
   // # Move shema validation to routes
-  // const { error } = contactsShema.validate(req.body);
+  // const { error } = Contact.contactsShema.validate(req.body);
   // if (error) throw HttpError({ status: 400, message: error });
 
   //^ Method .findByIdAndUpdate(id, obj, {new: true}): first argument must be id, second - updated object, third - for return updated obj (by default it returns old obj)
@@ -64,8 +64,23 @@ const editContact = async (req, res, next) => {
   res.json(editedContact);
 };
 
+const editFavorite = async (req, res, next) => {
+  const { id } = req.params;
+
+  // Method .findByIdAndUpdate() validating only those fields that it receives. Other fields it not touching.
+  const editedContact = await Contact.findByIdAndUpdate(id, req.body, {
+    new: true,
+  });
+
+  if (!editedContact) throw HttpError({ status: 404, message: "Not found" });
+
+  res.json(editedContact);
+};
+
+//^ For delete Mongoose uses two method (they work the same): .findByIdAndDelete() (ongoing method) or .findByIdAndRemove() (old method)
+// These methods deleting obj from db and return this obj. If this object not exist they return "null"
 const removeContact = async (req, res, next) => {
-  const removedContact = await Contact.removeContact(req.params.id);
+  const removedContact = await Contact.findByIdAndDelete(req.params.id);
   if (!removedContact) throw HttpError({ status: 404, message: "Not found" });
 
   // res.json(removedContact);
@@ -81,6 +96,7 @@ export const contactsController = {
   getContacts: tryCatchDecorator(getContacts),
   getContactById: tryCatchDecorator(getContactById),
   addContact: tryCatchDecorator(addContact),
-  editContact: tryCatchDecorator(editContact),
+  editFullContact: tryCatchDecorator(editFullContact),
+  editFavorite: tryCatchDecorator(editFavorite),
   removeContact: tryCatchDecorator(removeContact),
 };

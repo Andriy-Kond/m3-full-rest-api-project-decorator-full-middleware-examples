@@ -7,8 +7,6 @@ const numberTypeList = ["home", "work", "friend"];
 const birthDateRegExp = /^\d{2}-\d{2}-\d{4}$/;
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})*$/;
 
-//% Mongoose-schema - validate data before for save it in db
-
 const emailValidator_v1 = validate({
   validator: "isEmail", // Used ready validator for emails
   message: "Invalid email format",
@@ -26,7 +24,8 @@ const emailValidator_v2 = validate({
     "Invalid email format. Ensure at least one domain after @ and at least 2 characters after the last dot.",
 });
 
-const contactSchema = new Schema(
+//* Mongoose-schema - validate data before for save it in db
+const mongooseContactSchema = new Schema(
   {
     name: {
       type: String,
@@ -71,7 +70,7 @@ const contactSchema = new Schema(
   { versionKey: false, timestamps: true },
 );
 
-const contactSchema_v2 = new Schema({
+const mongooseContactSchema_v2 = new Schema({
   name: {
     type: String,
     required: true,
@@ -95,16 +94,18 @@ const contactSchema_v2 = new Schema({
 // ! Middleware for errors of mongoose schema:
 // Mongoose throws errors without status. If status not presented, will be error.status = 500, because in case of error, tryCatchDecorator() will catch it and invokes next(error). The next with error argument will invoke app.use((err, req, res, next) in app.js and set status = 500. But error of body validation is not 500 status (Internal Server Error), but must be 400 status (Bad request). Therefore you should set status=400 in additional middleware.
 // The next middleware will works when will be error from any of Mongoose-schema methods (.find(), .create(), etc).
-contactSchema.post("save", handleMongooseError);
+mongooseContactSchema.post("save", handleMongooseError);
 
 // This fn will be the same for each schemas of Mongoose. Therefore you should to move this fn to isolated file (to helpers/utils)
 
-export const Contact = model("contact", contactSchema);
+const Contact = model("contact", mongooseContactSchema);
 
-//% Joi-schema - validate data that comes from frontend
+//* Joi-schema - validate data that comes from frontend
 // Joi and Mongoose schemas works together. Joi-schema verifying incoming data, Mongoose-schema verifying data that you want to save in database.
 // For example incoming data of date can be in format "YYYY-MM-DD", but in database format should be in format "DD-MM-YYYY". So after incoming data you should to formatting it in right format before note it in database.
-export const contactsShema = Joi.object({
+
+// Schema for set all fields (add new contact or edit contact)
+const addContact = Joi.object({
   name: Joi.string()
     // .pattern(new RegExp("^[a-zA-Z0-9-_]{3,30}$"))
     .alphanum()
@@ -124,3 +125,15 @@ export const contactsShema = Joi.object({
     .required(),
   birth_date: Joi.string().pattern(birthDateRegExp).required(),
 });
+
+// Schema for set the "favorite" field only
+const editFavorite = Joi.object({
+  favorite: Joi.boolean().required(),
+});
+
+const joiSchemas = {
+  addContact,
+  editFavorite,
+};
+
+export { joiSchemas, Contact };
