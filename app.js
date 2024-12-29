@@ -13,16 +13,22 @@ export const app = express();
 // cross-env NODE_ENV=production nodemon server.js - will show full info
 const formatsLogger = app.get("env") === "development" ? "dev" : "short"; // read ENV and show full or short info
 
+//^ app.use([path], middleware);
+// .use((req, res, next) => {...}): add middleware for each request (PUT, DELETE, etc.)
+// .use('/api', (req, res, next) => {...}): add middleware for requests on routes starting with '/api' (/api/users, /api/products/123, etc)
+// .use((err, req, res, next) => {...}): add middleware for errors processing
+
 app.use(logger(formatsLogger)); // show full or short info in log
 app.use(cors());
 app.use(express.json()); // Checks if exist body in each request. If exist, it checks type by header "Content-Type". If Content-Type === "application/json, this middleware convert it from string to object (by JSON.parse())
 
-app.use("/api/contacts", contactsRouter);
+app.use("/api/contacts", contactsRouter); // use contactsRouter methods if request on "/api/contacts" route
 
 app.use("/", (req, res, next) => {
   res.status(404).json({ message: "Not found route" });
 });
 
+// Route for errors (4 parameters)
 app.use((err, req, res, next) => {
   //$ opt1
   // res.status(500).json({ message: err.message });
