@@ -3,7 +3,7 @@
 import express from "express";
 import { contactsController } from "../../controllers/contactsController.js";
 import { checkErrorJoiSchemaDecorator } from "../../middlewares/checkErrorJoiSchemaDecorator.js";
-import { joiSchemas } from "../../models/contactModel.js";
+import { joiContactSchemas } from "../../models/contactModel.js";
 import { isValidId } from "../../middlewares/isValidId.js";
 
 export const contactsRouter = express.Router();
@@ -15,7 +15,7 @@ contactsRouter.get("/:id", isValidId, contactsController.getContactById);
 // * local middlewares "checkErrorJoiSchemaDecorator" for each request:
 contactsRouter.post(
   "/",
-  checkErrorJoiSchemaDecorator(joiSchemas.addContact),
+  checkErrorJoiSchemaDecorator(joiContactSchemas.addContact),
   contactsController.addContact,
 );
 
@@ -23,7 +23,7 @@ contactsRouter.post(
 contactsRouter.put(
   "/:id",
   isValidId,
-  checkErrorJoiSchemaDecorator(joiSchemas.addContact),
+  checkErrorJoiSchemaDecorator(joiContactSchemas.addContact),
   contactsController.editFullContact,
 );
 
@@ -31,7 +31,7 @@ contactsRouter.put(
 contactsRouter.patch(
   "/:id/favorite",
   isValidId,
-  checkErrorJoiSchemaDecorator(joiSchemas.editFavorite),
+  checkErrorJoiSchemaDecorator(joiContactSchemas.editFavorite),
   contactsController.editFavorite,
 );
 

@@ -2,7 +2,9 @@ import { Schema, model } from "mongoose";
 
 import Joi from "joi";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
-import { isEmail, isLength, isNumeric } from "validator";
+import validator from "validator";
+
+const { isEmail, isLength, isNumeric } = validator;
 
 const numberTypeList = ["home", "work", "friend"];
 const birthDateRegExp = /^\d{2}-\d{2}-\d{4}$/;
@@ -117,7 +119,7 @@ const mongooseContactSchema_v2 = new Schema({
 mongooseContactSchema.post("save", handleMongooseError);
 // This fn will be the same for each schemas of Mongoose. Therefore you should to move this fn to isolated file (to helpers/utils)
 
-const Contact = model("contact", mongooseContactSchema); // Creating mongoose model (schema)
+export const Contact = model("contact", mongooseContactSchema); // Creating mongoose model (schema)
 
 //* Joi-schema - validate data that comes from frontend
 // Joi and Mongoose schemas works together. Joi-schema verifying incoming data, Mongoose-schema verifying data that you want to save in database.
@@ -150,9 +152,7 @@ const editFavorite = Joi.object({
   favorite: Joi.boolean().required(),
 });
 
-const joiSchemas = {
+export const joiContactSchemas = {
   addContact,
   editFavorite,
 };
-
-export { joiSchemas, Contact };
