@@ -64,7 +64,7 @@ const mongooseContactSchema = new Schema(
       // Validation of new package "validator.js"
       validate: {
         validator: value => isLength(value, { min: 10, max: 15 }),
-        message: "Password must be 10-15 characters long",
+        message: "Phone must be 10-15 characters long",
       },
     },
     favorite: {
