@@ -1,7 +1,8 @@
 import { Schema, model } from "mongoose";
-import validate from "mongoose-validator";
+
 import Joi from "joi";
 import { handleMongooseError } from "../utils/handleMongooseError.js";
+import { isEmail, isLength, isNumeric } from "validator";
 
 const numberTypeList = ["home", "work", "friend"];
 const birthDateRegExp = /^\d{2}-\d{2}-\d{4}$/;
@@ -11,43 +12,60 @@ const birthDateRegExp = /^\d{2}-\d{2}-\d{4}$/;
 // - at least 2 symbols after the last period
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})*$/;
 
-const emailValidator_v1 = validate({
-  validator: "isEmail", // Buit-in validator of mongoose-validator for emails
-  message: "Invalid email format",
-});
+const customEmailValidator = value => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(value);
+};
 
-const emailValidator_v2 = validate({
-  validator: function (value) {
-    const regex = emailRegExp;
-    return regex.test(value);
-  },
-  message:
-    "Invalid email format. Ensure at least one domain after @ and at least 2 characters after the last dot.",
-});
+// const emailValidator_v1 = validate({
+//   validator: "isEmail", // Buit-in validator of mongoose-validator for emails
+//   message: "Invalid email format",
+// });
+
+// const emailValidator_v2 = validate({
+//   validator: function (value) {
+//     const regex = emailRegExp;
+//     return regex.test(value);
+//   },
+//   message:
+//     "Invalid email format. Ensure at least one domain after @ and at least 2 characters after the last dot.",
+// });
 
 //* Mongoose-schema - validate data before for save it in db
 const mongooseContactSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
-      minlength: 3,
-      maxlength: 30,
+      required: [true, "Name i required"],
+      minlength: [3, "Name must be at least 3 characters"],
+      maxlength: [30, "Name must be not exceed 30 characters"],
     },
     email: {
       type: String,
-      required: true,
-      validate: emailValidator_v2,
+      required: [true, "Name is required"],
+      validate: {
+        // validator: value => isEmail(value), // Built-in in validator.js check for email
+        validator: customEmailValidator,
+        message:
+          "Invalid email format. Ensure at least one domain after @ and at least 2 characters after the last dot",
+      },
     },
     phone: {
       type: String,
       required: true,
-      validate: validate({
-        validator: String,
-        // validator: "isNumeric", // Built-in numeric check
-        arguments: [10, 15], // min and max length of number
-        message: "Phone number must be numeric and 10-15 characters long",
-      }),
+      // Validation of old package "mongoose-validator":
+      // validate: validate({
+      //   validator: String,
+      //   // validator: "isNumeric", // Built-in numeric check
+      //   arguments: [10, 15], // min and max length of number
+      //   message: "Phone number must be numeric and 10-15 characters long",
+      // }),
+
+      // Validation of new package "validator.js"
+      validate: {
+        validator: value => isLength(value, { min: 10, max: 15 }),
+        message: "Password must be 10-15 characters long",
+      },
     },
     favorite: {
       type: Boolean, // boolean type of value
