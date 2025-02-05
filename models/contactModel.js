@@ -116,8 +116,17 @@ const mongooseContactSchema_v2 = new Schema({
 // ! Middleware for errors of mongoose schema:
 // Mongoose throws errors without status. If status not presented, will be error.status = 500, because in case of error, tryCatchDecorator() will catch it and invokes next(error). The next with error argument will invoke app.use((err, req, res, next) in app.js and set status = 500. But error of body validation is not 500 status (Internal Server Error), but must be 400 status (Bad request). Therefore you should set status=400 in additional middleware.
 // The next middleware will works when will be error from any of Mongoose-schema methods (.find(), .create(), etc).
-mongooseContactSchema.post("save", handleMongooseError);
 // This fn will be the same for each schemas of Mongoose. Therefore you should to move this fn to isolated file (to helpers/utils)
+mongooseContactSchema.post("save", handleMongooseError);
+// "save" — це подія (hook), яка в цьому прикладі спрацьовує ПІСЛЯ того, як виконується .save() на екземплярі моделі.
+// Mongoose має хуки (middleware) двох типів:
+// pre – виконується перед певною дією (наприклад, перед .save()).
+// post – виконується після певної дії (наприклад, після .save()).
+// Варіанті хуків:
+// .pre("save", callback) — виконується ПЕРЕД збереженням. Вимагає виклику next(), щоб продовжити виконання.
+// .post("save", callback) — виконується ПІСЛЯ збереження. next() не потрібен, бо збереження вже відбулося.
+// .post("remove", callback) — виконується ПІСЛЯ видалення.
+// .post("updateOne", callback) — виконується ПІСЛЯ оновлення.
 
 export const Contact = model("contact", mongooseContactSchema); // Creating mongoose model (schema)
 

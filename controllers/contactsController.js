@@ -36,6 +36,18 @@ const addContact = async (req, res, next) => {
   res.status(201).json(newContact);
 };
 
+//^ Метод .save() у Mongoose
+// .save() використовується для збереження документа в базі після його створення через new Deck({...}).
+// Він дозволяє виконувати додаткові перевірки або викликати middleware перед записом в базу.
+// .create() створює та одразу записує новий документ у базу, а .save() дозволяє спочатку створити об'єкт у пам'яті, модифікувати його, а потім зберегти.
+
+// Приклад:
+// const newDeckBySave = new Deck({ name: "My Deck" }); // Створили екземпляр
+// await newDeckBySave.save(); // Зберегли його в базу
+
+// Якщо ж використати .create(), то це виглядатиме так:
+// const newDeckByCreate = await Deck.create({ name: "My Deck" }); // Одразу створює і зберігає
+
 const editFullContact = async (req, res, next) => {
   const { id } = req.params;
 
